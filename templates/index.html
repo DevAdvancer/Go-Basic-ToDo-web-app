@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="/static/style.css"> <!-- Link to optional stylesheet -->
+</head>
+<body>
+    <h1>Todo List</h1>
+
+    <ul>
+        {{range .}}
+        <li>
+            <strong>{{if .Done}}<del>{{end}}{{.Title}}{{if .Done}}</del>{{end}}</strong>
+        </li>
+        {{else}}
+        <p>No todos yet!</p>
+        {{end}}
+    </ul>
+
+    <form id="todo-form">
+        <input type="text" id="todo-title" placeholder="New todo...">
+        <button type="submit">Add Todo</button>
+    </form>
+
+    <script>
+        // Handle the form submission to create a new todo
+        document.getElementById("todo-form").addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            const title = document.getElementById("todo-title").value;
+
+            fetch('/todos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: title,
+                    done: false
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Todo added:", data);
+                window.location.reload();  // Reload the page to update the list
+            })
+            .catch(error => {
+                console.error("Error adding todo:", error);
+            });
+        });
+    </script>
+</body>
+</html>
